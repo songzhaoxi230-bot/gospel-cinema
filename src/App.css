@@ -1,0 +1,26 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding-top: 70px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  main {
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding-top: 50px;
+  }
+}
+
