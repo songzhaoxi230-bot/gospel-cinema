@@ -48,6 +48,24 @@ function Navigation({ isLoggedIn, user, onLogout }) {
             {isLoggedIn ? (
               <>
                 <span className="user-greeting">欢迎 {user?.username}</span>
+                <Link to="/favorites" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  💖 我的收藏
+                </Link>
+                <Link to="/playlists" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  📚 收藏夹
+                </Link>
+                <Link to="/watch-history" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  📺 观看历史
+                </Link>
+                <Link to="/downloads" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  📥 下载管理
+                </Link>
+                <Link to="/recommendations" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  🌟 推荐
+                </Link>
+                <Link to="/following" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+                  👥 关注
+                </Link>
                 <Link to="/profile" className="nav-link" onClick={() => setIsMenuOpen(false)}>
                   个人中心
                 </Link>

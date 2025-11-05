@@ -6,17 +6,18 @@ function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setMessage('')
     setLoading(true)
 
-    // 模拟登录验证
     if (!email || !password) {
-      setError('请填写所有字段')
+      setError('邮箱和密码不能为空')
       setLoading(false)
       return
     }
@@ -33,19 +34,47 @@ function Login({ onLogin }) {
       return
     }
 
-    // 模拟API调用
-    setTimeout(() => {
-      const userData = {
-        id: Math.random().toString(36).substr(2, 9),
-        username: email.split('@')[0],
-        email: email,
-        avatar: `https://via.placeholder.com/100?text=${email.split('@')[0]}`
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        setMessage('登录成功！')
+        if (onLogin) {
+          onLogin(data.user)
+        }
+        setTimeout(() => {
+          navigate('/')
+        }, 1000)
+      } else {
+        setError(data.message || '登录失败')
       }
-      
-      onLogin(userData)
-      navigate('/')
+    } catch (err) {
+      setError('网络错误：' + err.message)
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
+  }
+
+  const handleQQLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/qq/init')
+      const data = await response.json()
+      if (data.success) {
+        window.location.href = data.loginUrl
+      }
+    } catch (err) {
+      setError('QQ登录初始化失败：' + err.message)
+    }
   }
 
   return (
@@ -57,6 +86,7 @@ function Login({ onLogin }) {
 
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="error-message">{error}</div>}
+            {message && <div className="success-message">{message}</div>}
 
             <div className="form-group">
               <label htmlFor="email">邮箱地址</label>
@@ -104,11 +134,13 @@ function Login({ onLogin }) {
           </div>
 
           <div className="social-login">
-            <button className="social-btn wechat">微信登录</button>
-            <button className="social-btn qq">QQ登录</button>
+            <button type="button" className="social-btn wechat">微信登录</button>
+            <button type="button" className="social-btn qq" onClick={handleQQLogin}>QQ登录</button>
           </div>
 
           <p className="auth-footer">
+            <Link to="/phone-login" className="auth-link">手机号登录</Link>
+            {' | '}
             还没有账户？
             <Link to="/register" className="auth-link">立即注册</Link>
           </p>

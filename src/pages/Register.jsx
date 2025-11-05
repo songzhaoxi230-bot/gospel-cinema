@@ -3,28 +3,24 @@ import { Link, useNavigate } from 'react-router-dom'
 import './Auth.css'
 
 function Register({ onLogin }) {
-  const [username, setUsername] = useState('')
+  const [nickname, setNickname] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setMessage('')
     setLoading(true)
 
     // 验证表单
-    if (!username || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       setError('请填写所有字段')
-      setLoading(false)
-      return
-    }
-
-    if (username.length < 3) {
-      setError('用户名至少需要3个字符')
       setLoading(false)
       return
     }
@@ -47,19 +43,40 @@ function Register({ onLogin }) {
       return
     }
 
-    // 模拟API调用
-    setTimeout(() => {
-      const userData = {
-        id: Math.random().toString(36).substr(2, 9),
-        username: username,
-        email: email,
-        avatar: `https://via.placeholder.com/100?text=${username}`
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          confirmPassword,
+          nickname: nickname || '用户'
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        setMessage('注册成功！')
+        if (onLogin) {
+          onLogin(data.user)
+        }
+        setTimeout(() => {
+          navigate('/')
+        }, 1000)
+      } else {
+        setError(data.message || '注册失败')
       }
-      
-      onLogin(userData)
-      navigate('/')
+    } catch (err) {
+      setError('网络错误：' + err.message)
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -71,15 +88,16 @@ function Register({ onLogin }) {
 
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="error-message">{error}</div>}
+            {message && <div className="success-message">{message}</div>}
 
             <div className="form-group">
-              <label htmlFor="username">用户名</label>
+              <label htmlFor="nickname">昵称（可选）</label>
               <input
-                id="username"
+                id="nickname"
                 type="text"
-                placeholder="请输入用户名"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="请输入昵称"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
                 className="form-input"
               />
             </div>
@@ -139,8 +157,8 @@ function Register({ onLogin }) {
           </div>
 
           <div className="social-login">
-            <button className="social-btn wechat">微信注册</button>
-            <button className="social-btn qq">QQ注册</button>
+            <button type="button" className="social-btn wechat">微信注册</button>
+            <button type="button" className="social-btn qq">QQ注册</button>
           </div>
 
           <p className="auth-footer">

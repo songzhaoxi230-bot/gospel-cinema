@@ -1,0 +1,475 @@
+.video-player-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  padding: 20px;
+  color: #fff;
+  position: relative;
+}
+
+.video-player-container.loading,
+.video-player-container.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.player-wrapper {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  background: #000;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.video-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.player-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 40px 20px 20px;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.player-controls.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.player-controls.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.progress-container {
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  position: relative;
+  cursor: pointer;
+  transition: height 0.2s ease;
+}
+
+.progress-bar:hover {
+  height: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.progress-handle {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-bar:hover .progress-handle {
+  opacity: 1;
+}
+
+.controls-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.controls-left,
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.play-btn {
+  font-size: 24px;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  cursor: pointer;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.time-display {
+  font-size: 14px;
+  color: #fff;
+  min-width: 80px;
+  text-align: center;
+}
+
+.quality-selector {
+  position: relative;
+}
+
+.quality-btn {
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+.quality-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  display: none;
+  z-index: 20;
+  min-width: 100px;
+}
+
+.quality-selector:hover .quality-menu {
+  display: block;
+}
+
+.quality-option {
+  width: 100%;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.quality-option:hover,
+.quality-option.active {
+  background: rgba(102, 126, 234, 0.5);
+}
+
+.center-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 5;
+}
+
+.center-play-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-info {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.video-info h1 {
+  margin: 0 0 15px 0;
+  font-size: 32px;
+  color: #fff;
+}
+
+.description {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: #b0b0b0;
+  line-height: 1.6;
+}
+
+.info-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.info-actions button {
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.info-actions button:hover {
+  background: rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-back {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.btn-back:hover {
+  background: rgba(0, 0, 0, 0.7);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 全屏样式 */
+.video-player-container:fullscreen {
+  padding: 0;
+}
+
+.video-player-container:fullscreen .player-wrapper {
+  padding-bottom: 0;
+  height: 100vh;
+  margin: 0;
+  border-radius: 0;
+}
+
+.video-player-container:fullscreen .video-element {
+  width: 100%;
+  height: 100%;
+}
+
+.video-player-container:fullscreen .video-info,
+.video-player-container:fullscreen .btn-back {
+  display: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .player-wrapper {
+    padding-bottom: 56.25%;
+    margin-bottom: 20px;
+  }
+
+  .video-info {
+    padding: 20px;
+  }
+
+  .video-info h1 {
+    font-size: 24px;
+  }
+
+  .description {
+    font-size: 14px;
+  }
+
+  .info-actions {
+    gap: 10px;
+  }
+
+  .info-actions button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .controls-bottom {
+    gap: 8px;
+  }
+
+  .control-btn {
+    font-size: 18px;
+    padding: 6px;
+  }
+
+  .volume-slider {
+    width: 60px;
+  }
+
+  .time-display {
+    font-size: 12px;
+    min-width: 70px;
+  }
+
+  .center-play-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-wrapper {
+    padding-bottom: 56.25%;
+    margin-bottom: 15px;
+  }
+
+  .player-controls {
+    padding: 30px 10px 10px;
+  }
+
+  .progress-container {
+    margin-bottom: 10px;
+  }
+
+  .controls-bottom {
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .controls-left,
+  .controls-right {
+    gap: 5px;
+  }
+
+  .control-btn {
+    font-size: 16px;
+    padding: 4px;
+  }
+
+  .volume-control {
+    display: none;
+  }
+
+  .time-display {
+    font-size: 11px;
+    min-width: 60px;
+  }
+
+  .quality-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .center-play-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  .video-info {
+    padding: 15px;
+  }
+
+  .video-info h1 {
+    font-size: 20px;
+  }
+
+  .description {
+    font-size: 13px;
+  }
+
+  .info-actions {
+    gap: 8px;
+  }
+
+  .info-actions button {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .btn-back {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
